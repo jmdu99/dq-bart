@@ -312,7 +312,7 @@ def parse_args():
     if args.teacher_model is None:
         args.teacher_model = args.model_name_or_path
 
-    if args.dataset_name == "xsum" | args.dataset_name == "samsum":
+    if args.dataset_name == "xsum" or args.dataset_name == "samsum":
         args.length_penalty = 1.0
         args.max_length = 62
         args.min_length = 11
