@@ -36,7 +36,6 @@ from datasets import load_dataset, load_metric
 from filelock import FileLock
 from torch.nn import MSELoss
 from torch.utils.data.dataloader import DataLoader
-from tqdm import tqdm
 from tqdm.auto import tqdm
 from transformers import (
     CONFIG_MAPPING,
@@ -55,8 +54,6 @@ from transformers.utils.versions import require_version
 
 from quant.configuration_bart_quant import BartConfig as QBartConfig
 from quant.modeling_bart_quant import BartForConditionalGeneration as QBart
-
-import os
 
 # Run the git config command
 os.system("git config --global --add safe.directory '*'")
@@ -900,6 +897,11 @@ def main():
         result = {key: value.mid.fmeasure * 100 for key, value in result.items()}
         result = {'test/' + k: round(v, 4) for k, v in result.items()}
         logger.info(f"test result: {result}")
+
+        param_size = sum(p.numel() for p in best_model.parameters())
+        param_size_mb = param_size * 4 / (1024 * 1024)
+        logger.info(f"Num. model parameters: {param_size}")
+        logger.info(f"Model size: {param_size_mb} MB")
 
 
 if __name__ == "__main__":
