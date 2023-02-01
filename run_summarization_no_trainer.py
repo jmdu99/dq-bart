@@ -53,7 +53,6 @@ from transformers import (
 from transformers.file_utils import is_offline_mode
 from transformers.utils.versions import require_version
 
-import wandb
 from quant.configuration_bart_quant import BartConfig as QBartConfig
 from quant.modeling_bart_quant import BartForConditionalGeneration as QBart
 
@@ -61,8 +60,6 @@ import os
 
 # Run the git config command
 os.system("git config --global --add safe.directory '*'")
-
-os.environ['WANDB_API_KEY'] = '7bf82743855f4ffe2465b6f319d93ababe4fd9a8'
 
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/summarization/requirements.txt")
 
@@ -381,8 +378,6 @@ def main():
     if is_master:
         logger.info(accelerator.state)
         logger.warning(args)
-        task, run = args.output_dir.split('/')[1:]
-        wandb.init(project=task, name=run, config=args)
 
     # Setup logging, we only want one process per machine to log things on the screen.
     # accelerator.is_local_main_process is only True for one process per machine.
@@ -761,17 +756,6 @@ def main():
                     cur_step = (epoch * len(train_dataloader) + step) // args.gradient_accumulation_steps
                     log_accu_steps = args.log_steps * args.gradient_accumulation_steps
                     if (step + 1) % log_accu_steps == 0 and is_master:
-                        wandb.log({'train/lr': lr_scheduler.get_last_lr()[0], 'train/step': cur_step,
-                                   'train/loss': log_total_loss / log_accu_steps,
-                                   'train/task_loss': log_task_loss / log_accu_steps,
-                                   'train/logits_loss': log_logits_loss / log_accu_steps,
-                                   "train/enc_att_loss": log_enc_att_loss / log_accu_steps,
-                                   "train/dec_att_loss": log_dec_att_loss / log_accu_steps,
-                                   "train/crs_att_loss": log_crs_att_loss / args.gradient_accumulation_steps,
-                                   "train/enc_hid_loss": log_enc_hid_loss / log_accu_steps,
-                                   "train/enc_hid_last_loss": log_enc_hid_last_loss / log_accu_steps,
-                                   "train/dec_hid_loss": log_dec_hid_loss / log_accu_steps})
-
                         log_total_loss = 0.0
                         log_task_loss = 0.0
                         log_logits_loss = 0.0
@@ -820,8 +804,6 @@ def main():
             # Extract a few results from ROUGE
             result = {key: value.mid.fmeasure * 100 for key, value in result.items()}
             result = {'eval/' + k: round(v, 4) for k, v in result.items()}
-            if is_master:
-                wandb.log(result)
             res_rougeL = result['eval/rougeLsum']
 
             logger.info(f"evaluation result: {result} ")
@@ -897,8 +879,6 @@ def main():
         # Extract a few results from ROUGE
         result = {key: value.mid.fmeasure * 100 for key, value in result.items()}
         result = {'test/' + k: round(v, 4) for k, v in result.items()}
-        if is_master:
-            wandb.log(result)
         logger.info(f"test result: {result}")
 
 
