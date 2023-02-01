@@ -103,6 +103,28 @@ distill_mappings_new = {1: {0: 0}}
 NUMS = [str(i) for i in range(6)]
 
 
+def remove_use_diff_argument():
+    read_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py"
+    write_tmp_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py.tmp"
+
+    # Open the file for reading
+    with open(read_file, "r") as file:
+        lines = file.readlines()
+
+    # Open a temporary file for writing
+    with open(write_tmp_file, "w") as out:
+        for line in lines:
+            # Check if the line contains the "to_json_file" method definition
+            if "def to_json_file(self, json_file_path, use_diff=True):" in line:
+                # Replace the line with the updated method definition
+                out.write("def to_json_file(self, json_file_path):\n")
+            else:
+                out.write(line)
+
+    # Replace the original file with the temporary file
+    os.rename(write_tmp_file, read_file)
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Finetune a transformers model on a text classification task")
     parser.add_argument("--dataset_name",
@@ -344,6 +366,7 @@ def parse_args():
 
 
 def main():
+    remove_use_diff_argument()
     args = parse_args()
 
     logging.basicConfig(
