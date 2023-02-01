@@ -1,9 +1,11 @@
-transformers==4.17.0
-datasets==1.18.4
-sacrebleu==2.0
+transformers
+transformers
+datasets
+sacrebleu
 wandb
 nltk
-accelerate==0.5.1
+accelerate
 tensorboard
 setuptools<50
 rouge_score
+py7zr
