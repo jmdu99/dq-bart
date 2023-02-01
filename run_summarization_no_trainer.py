@@ -62,6 +62,8 @@ import os
 # Run the git config command
 os.system("git config --global --add safe.directory '*'")
 
+os.environ['WANDB_API_KEY'] = '7bf82743855f4ffe2465b6f319d93ababe4fd9a8'
+
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/summarization/requirements.txt")
 
 # You should update this to your particular problem to have better documentation of `model_type`
@@ -377,7 +379,7 @@ def main():
         logger.info(accelerator.state)
         logger.warning(args)
         task, run = args.output_dir.split('/')[1:]
-        wandb.init(project=task, name=run, config=args, api_key='7bf82743855f4ffe2465b6f319d93ababe4fd9a8')
+        wandb.init(project=task, name=run, config=args)
 
     # Setup logging, we only want one process per machine to log things on the screen.
     # accelerator.is_local_main_process is only True for one process per machine.
