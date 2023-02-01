@@ -774,7 +774,6 @@ def main():
                     progress_bar.update(1)
                     completed_steps += 1
 
-                    cur_step = (epoch * len(train_dataloader) + step) // args.gradient_accumulation_steps
                     log_accu_steps = args.log_steps * args.gradient_accumulation_steps
                     if (step + 1) % log_accu_steps == 0 and is_master:
                         log_total_loss = 0.0
