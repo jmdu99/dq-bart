@@ -102,21 +102,15 @@ NUMS = [str(i) for i in range(6)]
 cong_utils_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py"
 
 
-def print_to_json_file_definition():
-    with open(cong_utils_file, "r") as file:
-        lines = file.readlines()
-
-    for line in lines:
-        if "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):" \
-                or "self.to_json_file(output_config_file, use_diff=True)" in line:
-            print('use_diff=True')
-    print('Done')
-
-
 def remove_use_diff_argument():
     # Open the file for reading
     with open(cong_utils_file, "r") as file:
         lines = file.readlines()
+        print('Before writing')
+        for line in lines:
+            if "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):" \
+                    or "self.to_json_file(output_config_file, use_diff=True)" in line:
+                print('use_diff=True')
 
     with open(cong_utils_file, "w") as out:
         for line in lines:
@@ -129,6 +123,15 @@ def remove_use_diff_argument():
                 out.write("self.to_json_file(output_config_file)\n")
             else:
                 out.write(line)
+
+    with open(cong_utils_file, "r") as file:
+        lines = file.readlines()
+        print('After writing')
+        for line in lines:
+            if "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):" \
+                    or "self.to_json_file(output_config_file, use_diff=True)" in line:
+                print('use_diff=True')
+        print('Finish')
 
 
 def parse_args():
@@ -913,7 +916,5 @@ def main():
 
 
 if __name__ == "__main__":
-    print_to_json_file_definition()
     remove_use_diff_argument()
-    print_to_json_file_definition()
     # main()
