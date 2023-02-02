@@ -107,10 +107,10 @@ def print_to_json_file_definition():
         lines = file.readlines()
 
     for line in lines:
-        if "def to_json_file(self, json_file_path, use_diff=True):" in line:
+        if "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):" \
+                or "self.to_json_file(output_config_file, use_diff=True)" in line:
             print('use_diff=True')
-        else:
-            print('No use_diff in function')
+    print('Done')
 
 
 def remove_use_diff_argument():
@@ -124,9 +124,12 @@ def remove_use_diff_argument():
     with open(write_tmp_file, "w") as out:
         for line in lines:
             # Check if the line contains the "to_json_file" method definition
-            if "def to_json_file(self, json_file_path, use_diff=True):" in line:
+            if "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):" in line:
                 # Replace the line with the updated method definition
-                out.write("def to_json_file(self, json_file_path):\n")
+                out.write("def to_json_file(self, json_file_path: Union[str, os.PathLike]):\n")
+            if "self.to_json_file(output_config_file, use_diff=True)" in line:
+                # Replace the line with the updated method definition
+                out.write("self.to_json_file(output_config_file)\n")
             else:
                 out.write(line)
 
