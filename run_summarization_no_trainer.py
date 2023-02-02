@@ -121,6 +121,13 @@ def replace_line(file_path, old_line, new_line):
             file.write(line)
         file.close()
 
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            if old_line in line:
+                print('Not replaced yet **')
+        file.close()
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Finetune a transformers model on a text classification task")
