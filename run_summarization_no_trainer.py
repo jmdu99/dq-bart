@@ -837,7 +837,7 @@ def main():
             student_model.to('cpu')
             teacher_model.to('cpu')
             del student_model
-            del teacher_model
+            # del teacher_model
             del student_outputs
             del teacher_outputs
             for i in batch:
