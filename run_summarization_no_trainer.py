@@ -101,37 +101,25 @@ NUMS = [str(i) for i in range(6)]
 
 cong_utils_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py"
 
+old_line_1 = "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):"
+old_line_2 = "self.to_json_file(output_config_file, use_diff=True)"
+new_line_1 = "def to_json_file(self, json_file_path: Union[str, os.PathLike]):"
+new_line_2 = "self.to_json_file(output_config_file)"
 
-def remove_use_diff_argument():
-    # Open the file for reading
-    with open(cong_utils_file, "r") as file:
+
+def replace_line(file_path, old_line, new_line):
+    with open(file_path, 'r') as file:
         lines = file.readlines()
-        print('Before writing')
-        for line in lines:
-            if "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):" \
-                    or "self.to_json_file(output_config_file, use_diff=True)" in line:
-                print('use_diff=True')
+        file.close()
 
-    with open(cong_utils_file, "w") as out:
+    with open(file_path, 'w') as file:
         for line in lines:
-            # Check if the line contains the "to_json_file" method definition
-            if "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):" in line:
-                # Replace the line with the updated method definition
-                out.write("def to_json_file(self, json_file_path: Union[str, os.PathLike]):\n")
-            if "self.to_json_file(output_config_file, use_diff=True)" in line:
-                # Replace the line with the updated method definition
-                out.write("self.to_json_file(output_config_file)\n")
-            else:
-                out.write(line)
-
-    with open(cong_utils_file, "r") as file:
-        lines = file.readlines()
-        print('After writing')
-        for line in lines:
-            if "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):" \
-                    or "self.to_json_file(output_config_file, use_diff=True)" in line:
-                print('use_diff=True')
-        print('Finish')
+            if old_line in line:
+                print(line)
+                line = new_line
+                print(line)
+            file.write(line)
+        file.close()
 
 
 def parse_args():
@@ -916,5 +904,6 @@ def main():
 
 
 if __name__ == "__main__":
-    remove_use_diff_argument()
+    replace_line(cong_utils_file, old_line_1, new_line_1)
+    replace_line(cong_utils_file, old_line_2, new_line_2)
     # main()
