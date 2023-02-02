@@ -99,13 +99,25 @@ distill_mappings = {1: {0: 5},
 distill_mappings_new = {1: {0: 0}}
 NUMS = [str(i) for i in range(6)]
 
+cong_utils_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py"
+
+
+def print_to_json_file_definition():
+    with open(cong_utils_file, "r") as file:
+        lines = file.readlines()
+
+    for line in lines:
+        if "def to_json_file(self, json_file_path, use_diff=True):" in line:
+            print('use_diff=True')
+        else:
+            print('No use_diff in function')
+
 
 def remove_use_diff_argument():
-    read_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py"
-    write_tmp_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py.tmp"
+    write_tmp_file = f"{cong_utils_file}.tmp"
 
     # Open the file for reading
-    with open(read_file, "r") as file:
+    with open(cong_utils_file, "r") as file:
         lines = file.readlines()
 
     # Open a temporary file for writing
@@ -119,7 +131,7 @@ def remove_use_diff_argument():
                 out.write(line)
 
     # Replace the original file with the temporary file
-    os.rename(write_tmp_file, read_file)
+    os.rename(write_tmp_file, cong_utils_file)
 
 
 def parse_args():
@@ -363,7 +375,9 @@ def parse_args():
 
 
 def main():
+    print_to_json_file_definition()
     remove_use_diff_argument()
+    print_to_json_file_definition()
     args = parse_args()
 
     logging.basicConfig(
