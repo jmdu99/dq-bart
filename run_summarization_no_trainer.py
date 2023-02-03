@@ -99,24 +99,6 @@ distill_mappings = {1: {0: 5},
 distill_mappings_new = {1: {0: 0}}
 NUMS = [str(i) for i in range(6)]
 
-# Workaround due to transformers 4.17.0
-cong_utils_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py"
-old_line_1 = "self.to_json_file(output_config_file, use_diff=True)"
-new_line_1 = "self.to_json_file(output_config_file)\n"
-
-
-def replace_use_diff():
-    with open(cong_utils_file, 'r') as file:
-        lines = file.readlines()
-        file.close()
-
-    with open(cong_utils_file, 'w') as file:
-        for line in lines:
-            if old_line_1 in line:
-                line = new_line_1
-            file.write(line)
-        file.close()
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Finetune a transformers model on a text classification task")
@@ -899,5 +881,4 @@ def main():
 
 
 if __name__ == "__main__":
-    replace_use_diff()
     main()
