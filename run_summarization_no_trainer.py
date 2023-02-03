@@ -808,7 +808,10 @@ def main():
                 accelerator.save(unwrapped_model.state_dict(), output_path)
                 prev = res_rougeL
 
-                # load best model and evaluate on testset
+    for filename in os.listdir(args.output_dir):
+        print(filename)
+
+    # load best model and evaluate on testset
     if args.do_test:
         try:
             student_model.to('cpu')
@@ -824,8 +827,8 @@ def main():
         if not args.test_teacher:
             best_model = QBart(student_config)
             best_model.load_state_dict(
-                torch.load(os.path.join(args.output_dir + "/", "pytorch_model.bin"), map_location='cpu'))
-            # OR best_model = student_model
+                torch.load(os.path.join(args.output_dir + "/", "pytorch_model.bin"), map_location='cpu'), strict=False)
+            # OR best_model = unwrapped_model
 
         if args.test_teacher:
             best_model = teacher_model
