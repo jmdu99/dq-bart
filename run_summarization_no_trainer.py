@@ -804,7 +804,7 @@ def main():
             if args.output_dir is not None and res_rougeL > prev:
                 accelerator.wait_for_everyone()
                 unwrapped_model = accelerator.unwrap_model(student_model)
-                output_path = os.path.join(args.output_dir, "model.pt")
+                output_path = os.path.join(args.output_dir, "pytorch_model.bin")
                 accelerator.save(unwrapped_model.state_dict(), output_path)
                 prev = res_rougeL
 
@@ -813,7 +813,7 @@ def main():
         try:
             student_model.to('cpu')
             teacher_model.to('cpu')
-            del student_model
+            # del student_model
             # del teacher_model
             del student_outputs
             del teacher_outputs
@@ -822,16 +822,10 @@ def main():
         except Exception as e:
             logger.warning(f'Error in deletion: {e}')
         if not args.test_teacher:
-            best_model_config = QBartConfig.from_pretrained(args.output_dir,
-                                                            quantize_act=True,
-                                                            weight_bits=args.weight_bits,
-                                                            input_bits=args.input_bits,
-                                                            clip_val=args.clip_val,
-                                                            decoder_layers=args.distill_decoder,
-                                                            encoder_layers=args.distill_encoder)
-            best_model = QBart(best_model_config)
+            best_model = QBart(student_config)
             best_model.load_state_dict(
                 torch.load(os.path.join(args.output_dir + "/", "pytorch_model.bin"), map_location='cpu'))
+            # OR best_model = student_model
 
         if args.test_teacher:
             best_model = teacher_model
