@@ -101,10 +101,8 @@ NUMS = [str(i) for i in range(6)]
 
 # Workaround due to transformers 4.17.0
 cong_utils_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py"
-old_line_1 = "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):"
-old_line_2 = "self.to_json_file(output_config_file, use_diff=True)"
-new_line_1 = "def to_json_file(self, json_file_path: Union[str, os.PathLike]):"
-new_line_2 = "self.to_json_file(output_config_file)"
+old_line_1 = "self.to_json_file(output_config_file, use_diff=True)"
+new_line_1 = "self.to_json_file(output_config_file)\n"
 
 
 def replace_use_diff():
@@ -116,8 +114,6 @@ def replace_use_diff():
         for line in lines:
             if old_line_1 in line:
                 line = new_line_1
-            if old_line_2 in line:
-                line = new_line_2
             file.write(line)
         file.close()
 
@@ -687,7 +683,6 @@ def main():
             log_dec_hid_loss = 0.0
 
             for step, batch in enumerate(train_dataloader):
-                task_loss = 0.0
                 logits_loss = 0.0
                 enc_att_loss = 0.0
                 dec_att_loss = 0.0
