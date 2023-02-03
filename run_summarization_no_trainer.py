@@ -808,6 +808,7 @@ def main():
                 accelerator.save(unwrapped_model.state_dict(), output_path)
                 prev = res_rougeL
 
+    logger.info("Files in output directory after training:")
     for filename in os.listdir(args.output_dir):
         print(filename)
 
@@ -876,6 +877,9 @@ def main():
         param_size_mb = param_size * 4 / (1024 * 1024)
         logger.info(f"Num. model parameters: {param_size}")
         logger.info(f"Model size: {param_size_mb} MB")
+        logger.info("Files in output directory after testing:")
+        for filename in os.listdir(args.output_dir):
+            print(filename)
 
 
 if __name__ == "__main__":
