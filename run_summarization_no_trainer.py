@@ -120,16 +120,7 @@ def replace_use_diff():
                 line = new_line_2
             file.write(line)
         file.close()
-
-    with open(cong_utils_file, 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            if old_line_1 in line:
-                print('Not replaced yet **')
-            if old_line_2 in line:
-                print('Not replaced yet **')
-        file.close()
-
+        
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Finetune a transformers model on a text classification task")
@@ -914,4 +905,4 @@ def main():
 
 if __name__ == "__main__":
     replace_use_diff()
-    # main()
+    main()
