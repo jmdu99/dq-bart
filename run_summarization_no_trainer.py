@@ -120,7 +120,7 @@ def replace_use_diff():
                 line = new_line_2
             file.write(line)
         file.close()
-        
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Finetune a transformers model on a text classification task")
