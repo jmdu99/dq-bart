@@ -99,32 +99,34 @@ distill_mappings = {1: {0: 5},
 distill_mappings_new = {1: {0: 0}}
 NUMS = [str(i) for i in range(6)]
 
+# Workaround due to transformers 4.17.0
 cong_utils_file = "/opt/conda/lib/python3.8/site-packages/transformers/configuration_utils.py"
-
 old_line_1 = "def to_json_file(self, json_file_path: Union[str, os.PathLike], use_diff: bool = True):"
 old_line_2 = "self.to_json_file(output_config_file, use_diff=True)"
 new_line_1 = "def to_json_file(self, json_file_path: Union[str, os.PathLike]):"
 new_line_2 = "self.to_json_file(output_config_file)"
 
 
-def replace_line(file_path, old_line, new_line):
-    with open(file_path, 'r') as file:
+def replace_use_diff():
+    with open(cong_utils_file, 'r') as file:
         lines = file.readlines()
         file.close()
 
-    with open(file_path, 'w') as file:
+    with open(cong_utils_file, 'w') as file:
         for line in lines:
-            if old_line in line:
-                print(line)
-                line = new_line
-                print(line)
+            if old_line_1 in line:
+                line = new_line_1
+            if old_line_2 in line:
+                line = new_line_2
             file.write(line)
         file.close()
 
-    with open(file_path, 'r') as file:
+    with open(cong_utils_file, 'r') as file:
         lines = file.readlines()
         for line in lines:
-            if old_line in line:
+            if old_line_1 in line:
+                print('Not replaced yet **')
+            if old_line_2 in line:
                 print('Not replaced yet **')
         file.close()
 
@@ -911,6 +913,5 @@ def main():
 
 
 if __name__ == "__main__":
-    replace_line(cong_utils_file, old_line_1, new_line_1)
-    replace_line(cong_utils_file, old_line_2, new_line_2)
+    replace_use_diff()
     # main()
