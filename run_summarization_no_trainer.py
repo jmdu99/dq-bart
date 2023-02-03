@@ -804,7 +804,7 @@ def main():
             if args.output_dir is not None and res_rougeL > prev:
                 accelerator.wait_for_everyone()
                 unwrapped_model = accelerator.unwrap_model(student_model)
-                unwrapped_model.save_pretrained(args.output_dir, save_function=accelerator.save)
+                accelerator.save(unwrapped_model.state_dict(), args.output_dir)
                 prev = res_rougeL
 
                 # load best model and evaluate on testset
