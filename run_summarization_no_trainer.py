@@ -341,7 +341,7 @@ def main():
         datefmt="%m/%d/%Y %H:%M:%S",
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler(os.path.join(args.output_dir, "training.log")),
+            logging.FileHandler(os.path.join(args.output_dir, "results.log")),
         ],
     )
 
