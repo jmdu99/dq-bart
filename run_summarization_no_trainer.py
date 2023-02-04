@@ -445,6 +445,10 @@ def main():
                                                      clip_val=args.clip_val,
                                                      decoder_layers=args.distill_decoder,
                                                      encoder_layers=args.distill_encoder)
+
+        student_config_path = os.path.join(args.output_dir, "config.json")
+        student_config.to_json_file(student_config_path)
+
         student_model = QBart(student_config)
 
         dst_dict = student_model.state_dict()  # Initilized student model state dict, needs loading weights
