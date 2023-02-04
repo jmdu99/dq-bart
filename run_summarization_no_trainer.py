@@ -822,7 +822,6 @@ def main():
             best_model = QBart(student_config)
             best_model.load_state_dict(
                 torch.load(os.path.join(args.output_dir + "/", "pytorch_model.bin"), map_location='cpu'), strict=False)
-            # OR best_model = unwrapped_model
 
         if args.test_teacher:
             best_model = teacher_model
