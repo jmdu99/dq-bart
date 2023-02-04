@@ -303,12 +303,6 @@ def parse_args():
             extension = args.validation_file.split(".")[-1]
             assert extension in ["csv", "json"], "`validation_file` should be a csv or a json file."
 
-    args.output_dir = f'./output_{args.dataset_name}/{args.weight_bits}_{args.input_bits}_{args.distill_encoder}_{args.distill_decoder}_{args.num_train_epochs}_{args.learning_rate}_fp16'
-    if args.new_distill_map:
-        args.output_dir += '_new'
-    if (not args.pred_distill) and (not args.intermediate_distill):
-        args.output_dir += '_nodis'
-
     if args.student_model is None:
         args.student_model = args.model_name_or_path
     if args.teacher_model is None:
@@ -330,7 +324,6 @@ def parse_args():
         args.task_weight = 1
         args.logits_weight = 0.8
         args.hid_weight = 3
-        args.output_dir += '_weighted'
     else:
         args.task_weight = 1
         args.logits_weight = 1
@@ -808,10 +801,6 @@ def main():
                 accelerator.save(unwrapped_model.state_dict(), output_path)
                 prev = res_rougeL
 
-    logger.info("Files in output directory after training:")
-    for filename in os.listdir(args.output_dir):
-        print(filename)
-
     # load best model and evaluate on testset
     if args.do_test:
         try:
@@ -877,9 +866,6 @@ def main():
         param_size_mb = param_size * 4 / (1024 * 1024)
         logger.info(f"Num. model parameters: {param_size}")
         logger.info(f"Model size: {param_size_mb} MB")
-        logger.info("Files in output directory after testing:")
-        for filename in os.listdir(args.output_dir):
-            print(filename)
 
 
 if __name__ == "__main__":
