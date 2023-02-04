@@ -819,11 +819,13 @@ def main():
         except Exception as e:
             logger.warning(f'Error in deletion: {e}')
         if not args.test_teacher:
+            prefix = 'student model'
             best_model = QBart(student_config)
             best_model.load_state_dict(
                 torch.load(os.path.join(args.output_dir + "/", "pytorch_model.bin"), map_location='cpu'), strict=False)
 
         if args.test_teacher:
+            prefix = 'teacher model'
             best_model = teacher_model
             logger.info(f"testing teacher model from {args.teacher_model} ")
 
@@ -863,7 +865,7 @@ def main():
         # Extract a few results from ROUGE
         result = {key: value.mid.fmeasure * 100 for key, value in result.items()}
         result = {'test/' + k: round(v, 4) for k, v in result.items()}
-        logger.info(f"test result: {result}")
+        logger.info(f"{prefix} test result: {result}")
 
         param_size = sum(p.numel() for p in best_model.parameters())
         param_size_mb = param_size * 4 / (1024 * 1024)
