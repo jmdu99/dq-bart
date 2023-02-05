@@ -43,9 +43,9 @@ from transformers.modeling_outputs import (
 from transformers.modeling_utils import PreTrainedModel, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
 from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
-from configuration_t5_quant import T5Config
+from .configuration_t5_quant import T5Config
 
-from utils_quant import QuantizeLinear, SymQuantizer
+from .utils_quant import QuantizeLinear, SymQuantizer
 
 
 logger = logging.get_logger(__name__)
