@@ -142,7 +142,7 @@ teacher_with_24_layers_distill_mappings = {
                 24: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 23}
 }
 
-NUMS = [str(i) for i in range(24)]
+NUMS = [str(i) for i in range(10)]
 
 
 def parse_args():
@@ -515,10 +515,6 @@ def main():
 
         dst_dict = student_model.state_dict()  # Initilized student model state dict, needs loading weights
         src_dict = teacher_model.state_dict()  # Pretrained teacher model state dict, whose weights will be loaded
-
-        print('Teacher model state dict items:')
-        for key in src_dict.keys():
-            print(key)
 
         print('Student model state dict items:')
         for key in dst_dict.keys():
