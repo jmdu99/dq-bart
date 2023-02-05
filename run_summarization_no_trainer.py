@@ -91,16 +91,59 @@ summarization_name_mapping = {
     "wiki_summary": ("article", "highlights"),
 }
 
-distill_mappings = {1: {0: 5},
-                    2: {0: 0, 1: 5},
-                    3: {0: 0, 1: 2, 2: 5},
-                    4: {0: 0, 1: 2, 2: 3, 3: 5},
-                    5: {0: 0, 1: 1, 2: 3, 3: 4, 4: 5},
-                    6: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5},
-                    12: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11}
-                    }
-distill_mappings_new = {1: {0: 0}}
-NUMS = [str(i) for i in range(6)]
+teacher_with_6_layers_distill_mappings = {
+                1: {0: 5},
+                2: {0: 0, 1: 5},
+                3: {0: 0, 1: 2, 2: 5},
+                4: {0: 0, 1: 2, 2: 3, 3: 5},
+                5: {0: 0, 1: 1, 2: 3, 3: 4, 4: 5},
+                6: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+}
+
+teacher_with_12_layers_distill_mappings = {
+                1: {0: 11},
+                2: {0: 0, 1: 11},
+                3: {0: 0, 1: 5, 2: 11},
+                4: {0: 0, 1: 5, 2: 8, 3: 11},
+                5: {0: 0, 1: 2, 2: 6, 3: 9, 4: 11},
+                6: {0: 0, 1: 2, 2: 4, 3: 7, 4: 9, 5: 11},
+                7: {0: 0, 1: 1, 2: 3, 3: 5, 4: 7, 5: 9, 6: 11},
+                8: {0: 0, 1: 1, 2: 2, 3: 4, 4: 6, 5: 8, 6: 10, 7: 11},
+                9: {0: 0, 1: 1, 2: 2, 3: 3, 4: 5, 5: 7, 6: 9, 7: 10, 8: 11},
+                10: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 11},
+                11: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 11},
+                12: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11}
+}
+
+teacher_with_24_layers_distill_mappings = {
+                1: {0: 23},
+                2: {0: 0, 1: 23},
+                3: {0: 0, 1: 11, 2: 23},
+                4: {0: 0, 1: 11, 2: 17, 3: 23},
+                5: {0: 0, 1: 5, 2: 11, 3: 17, 4: 23},
+                6: {0: 0, 1: 5, 2: 8, 3: 13, 4: 17, 5: 23},
+                7: {0: 0, 1: 2, 2: 5, 3: 9, 4: 13, 5: 17, 6: 23},
+                8: {0: 0, 1: 2, 2: 4, 3: 7, 4: 11, 5: 15, 6: 19, 7: 23},
+                9: {0: 0, 1: 1, 2: 2, 3: 4, 4: 6, 5: 9, 6: 13, 7: 16, 8: 23},
+                10: {0: 0, 1: 1, 2: 2, 3: 3, 4: 5, 5: 7, 6: 10, 7: 13, 8: 16, 9: 23},
+                11: {0: 0, 1: 1, 2: 2, 3: 3, 4: 5, 5: 6, 6: 8, 7: 10, 8: 13, 9: 16, 10: 23},
+                12: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 9, 9: 11, 10: 13, 11: 23},
+                13: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 11, 11: 13, 12: 23},
+                14: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 13, 13: 23},
+                15: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 23},
+                16: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 23},
+                17: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 23},
+                18: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 23},
+                19: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 18, 18: 23},
+                20: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 18, 18: 20, 19: 23},
+                21: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 18, 18: 19, 19: 21, 20: 23},
+                22: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 18, 18: 19, 19: 20, 20: 22, 21: 23},
+                23: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 18, 18: 19, 19: 20, 20: 21, 21: 22, 22: 23},
+                24: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 23}
+}
+
+
+NUMS = [str(i) for i in range(24)]
 
 
 def parse_args():
@@ -278,6 +321,9 @@ def parse_args():
     parser.add_argument('--test_teacher',
                         action='store_true',
                         help="Whether to test teacher")
+    parser.add_argument('--n_layers_teacher',
+                        type=int,
+                        help="Number of layers before distillation")
     parser.add_argument('--distill_encoder',
                         default=6,
                         type=int,
@@ -289,13 +335,10 @@ def parse_args():
     parser.add_argument('--log_steps', default=20)
     parser.add_argument('--local_rank', default=0)
     parser.add_argument('--weighted', action='store_true')
-    parser.add_argument('--new_distill_map', action='store_true')
 
     args = parser.parse_args()
 
     # Sanity checks
-    if args.new_distill_map:
-        assert args.distill_decoder == 1
     if args.dataset_name is None and args.train_file is None and args.validation_file is None:
         raise ValueError("Need either a dataset name or a training/validation file.")
     else:
@@ -429,9 +472,18 @@ def main():
             "You can do it from another script, save it, and load it from here, using --tokenizer_name."
         )
 
+    if args.n_layers_teacher == 6:
+        distill_mappings = teacher_with_6_layers_distill_mappings
+
+    if args.n_layers_teacher == 12:
+        distill_mappings = teacher_with_12_layers_distill_mappings
+
+    if args.n_layers_teacher == 24:
+        distill_mappings = teacher_with_24_layers_distill_mappings
+
     distill_enc_mapping = distill_mappings[args.distill_encoder]
-    distill_dec_mapping = distill_mappings[args.distill_decoder] if not args.new_distill_map else distill_mappings_new[
-        args.distill_decoder]
+    distill_dec_mapping = distill_mappings[args.distill_decoder]
+
     maps = {'enc': distill_enc_mapping, 'dec': distill_dec_mapping}
 
     if args.model_name_or_path:
