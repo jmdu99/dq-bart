@@ -55,6 +55,9 @@ from transformers.utils.versions import require_version
 from quant.configuration_bart_quant import BartConfig as QBartConfig
 from quant.modeling_bart_quant import BartForConditionalGeneration as QBart
 
+from quant.configuration_t5_quant import T5Config as QT5Config
+from quant.modeling_t5_quant import T5ForConditionalGeneration as QT5
+
 # Run the git config command
 os.system("git config --global --add safe.directory '*'")
 
@@ -438,18 +441,26 @@ def main():
             config=config,
         )
 
-        student_config = QBartConfig.from_pretrained(args.teacher_model,
-                                                     quantize_act=True,
-                                                     weight_bits=args.weight_bits,
-                                                     input_bits=args.input_bits,
-                                                     clip_val=args.clip_val,
-                                                     decoder_layers=args.distill_decoder,
-                                                     encoder_layers=args.distill_encoder)
+        if "t5" in args.model_name_or_path:
+            student_config_class = QT5Config
+            student_model_class = QT5
+
+        if "bart" in args.model_name_or_path:
+            student_config_class = QBartConfig
+            student_model_class = QBart
+
+        student_config = student_config_class.from_pretrained(args.teacher_model,
+                                                              quantize_act=True,
+                                                              weight_bits=args.weight_bits,
+                                                              input_bits=args.input_bits,
+                                                              clip_val=args.clip_val,
+                                                              decoder_layers=args.distill_decoder,
+                                                              encoder_layers=args.distill_encoder)
 
         student_config_path = os.path.join(args.output_dir, "config.json")
         student_config.to_json_file(student_config_path)
 
-        student_model = QBart(student_config)
+        student_model = student_model_class(student_config)
 
         dst_dict = student_model.state_dict()  # Initilized student model state dict, needs loading weights
         src_dict = teacher_model.state_dict()  # Pretrained teacher model state dict, whose weights will be loaded

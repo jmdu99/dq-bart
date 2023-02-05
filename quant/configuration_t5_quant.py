@@ -58,10 +58,10 @@ class T5Config(PretrainedConfig):
             num_heads`.
         d_ff (`int`, *optional*, defaults to 2048):
             Size of the intermediate feed forward layer in each `T5Block`.
-        num_layers (`int`, *optional*, defaults to 6):
+        encoder_layers (`int`, *optional*, defaults to 6):
             Number of hidden layers in the Transformer encoder.
-        num_decoder_layers (`int`, *optional*):
-            Number of hidden layers in the Transformer decoder. Will use the same value as `num_layers` if not set.
+        decoder_layers (`int`, *optional*):
+            Number of hidden layers in the Transformer decoder. Will use the same value as `encoder_layers` if not set.
         num_heads (`int`, *optional*, defaults to 8):
             Number of attention heads for each attention layer in the Transformer encoder.
         relative_attention_num_buckets (`int`, *optional*, defaults to 32):
@@ -96,8 +96,8 @@ class T5Config(PretrainedConfig):
         d_model=512,
         d_kv=64,
         d_ff=2048,
-        num_layers=6,
-        num_decoder_layers=None,
+        encoder_layers=6,
+        decoder_layers=None,
         num_heads=8,
         relative_attention_num_buckets=32,
         relative_attention_max_distance=128,
@@ -126,9 +126,9 @@ class T5Config(PretrainedConfig):
         self.d_model = d_model
         self.d_kv = d_kv
         self.d_ff = d_ff
-        self.num_layers = num_layers
-        self.num_decoder_layers = (
-            num_decoder_layers if num_decoder_layers is not None else self.num_layers
+        self.encoder_layers = encoder_layers
+        self.decoder_layers = (
+            decoder_layers if decoder_layers is not None else self.encoder_layers
         )  # default = symmetry
         self.num_heads = num_heads
         self.relative_attention_num_buckets = relative_attention_num_buckets

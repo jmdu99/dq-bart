@@ -855,7 +855,7 @@ class T5Stack(T5PreTrainedModel):
         self.is_decoder = config.is_decoder
 
         self.block = nn.ModuleList(
-            [T5Block(config, has_relative_attention_bias=bool(i == 0)) for i in range(config.num_layers)]
+            [T5Block(config, has_relative_attention_bias=bool(i == 0)) for i in range(config.encoder_layers)]
         )
         self.final_layer_norm = T5LayerNorm(config.d_model, eps=config.layer_norm_epsilon)
         self.dropout = nn.Dropout(config.dropout_rate)
@@ -986,8 +986,8 @@ class T5Stack(T5PreTrainedModel):
             encoder_extended_attention_mask = None
 
         # Prepare head mask if needed
-        head_mask = self.get_head_mask(head_mask, self.config.num_layers)
-        cross_attn_head_mask = self.get_head_mask(cross_attn_head_mask, self.config.num_layers)
+        head_mask = self.get_head_mask(head_mask, self.config.encoder_layers)
+        cross_attn_head_mask = self.get_head_mask(cross_attn_head_mask, self.config.encoder_layers)
         present_key_value_states = () if use_cache else None
         all_hidden_states = () if output_hidden_states else None
         all_attentions = () if output_attentions else None
@@ -1160,17 +1160,17 @@ T5_INPUTS_DOCSTRING = r"""
         decoder_attention_mask (`torch.BoolTensor` of shape `(batch_size, target_sequence_length)`, *optional*):
             Default behavior: generate a tensor that ignores pad tokens in `decoder_input_ids`. Causal mask will also
             be used by default.
-        head_mask (`torch.FloatTensor` of shape `(num_heads,)` or `(num_layers, num_heads)`, *optional*):
+        head_mask (`torch.FloatTensor` of shape `(num_heads,)` or `(encoder_layers, num_heads)`, *optional*):
             Mask to nullify selected heads of the self-attention modules in the encoder. Mask values selected in `[0,
             1]`:
             - 1 indicates the head is **not masked**,
             - 0 indicates the head is **masked**.
-        decoder_head_mask (`torch.FloatTensor` of shape `(num_heads,)` or `(num_layers, num_heads)`, *optional*):
+        decoder_head_mask (`torch.FloatTensor` of shape `(num_heads,)` or `(encoder_layers, num_heads)`, *optional*):
             Mask to nullify selected heads of the self-attention modules in the decoder. Mask values selected in `[0,
             1]`:
             - 1 indicates the head is **not masked**,
             - 0 indicates the head is **masked**.
-        cross_attn_head_mask (`torch.Tensor` of shape `(num_heads,)` or `(num_layers, num_heads)`, *optional*):
+        cross_attn_head_mask (`torch.Tensor` of shape `(num_heads,)` or `(encoder_layers, num_heads)`, *optional*):
                 Mask to nullify selected heads of the cross-attention modules in the decoder. Mask values selected in
                 `[0, 1]`:
                 - 1 indicates the head is **not masked**,
@@ -1221,7 +1221,7 @@ T5_ENCODER_INPUTS_DOCSTRING = r"""
             - 1 for tokens that are **not masked**,
             - 0 for tokens that are **masked**.
             [What are attention masks?](../glossary#attention-mask)
-        head_mask (`torch.FloatTensor` of shape `(num_heads,)` or `(num_layers, num_heads)`, *optional*):
+        head_mask (`torch.FloatTensor` of shape `(num_heads,)` or `(encoder_layers, num_heads)`, *optional*):
             Mask to nullify selected heads of the self-attention modules. Mask values selected in `[0, 1]`:
             - 1 indicates the head is **not masked**,
             - 0 indicates the head is **masked**.
@@ -1243,7 +1243,7 @@ T5_ENCODER_INPUTS_DOCSTRING = r"""
 __HEAD_MASK_WARNING_MSG = """
 The input argument `head_mask` was split into two arguments `head_mask` and `decoder_head_mask`. Currently,
 `decoder_head_mask` is set to copy `head_mask`, but this feature is deprecated and will be removed in future versions.
-If you do not want to use any `decoder_head_mask` now, please set `decoder_head_mask = torch.ones(num_layers,
+If you do not want to use any `decoder_head_mask` now, please set `decoder_head_mask = torch.ones(encoder_layers,
 num_heads)`.
 """
 
@@ -1275,7 +1275,7 @@ class T5Model(T5PreTrainedModel):
         decoder_config = copy.deepcopy(config)
         decoder_config.is_decoder = True
         decoder_config.is_encoder_decoder = False
-        decoder_config.num_layers = config.num_decoder_layers
+        decoder_config.encoder_layers = config.decoder_layers
         self.decoder = T5Stack(decoder_config, self.shared)
 
         # Initialize weights and apply final processing
@@ -1370,13 +1370,13 @@ class T5Model(T5PreTrainedModel):
         __HEAD_MASK_WARNING_MSG = """
         The input argument `head_mask` was split into two arguments `head_mask` and `decoder_head_mask`. Currently,
         `decoder_head_mask` is set to copy `head_mask`, but this feature is deprecated and will be removed in future versions.
-        If you do not want to use any `decoder_head_mask` now, please set `decoder_head_mask = torch.ones(num_layers,
+        If you do not want to use any `decoder_head_mask` now, please set `decoder_head_mask = torch.ones(encoder_layers,
         num_heads)`.
         """
 
         # FutureWarning: head_mask was separated into two input args - head_mask, decoder_head_mask
         if head_mask is not None and decoder_head_mask is None:
-            if self.config.num_layers == self.config.num_decoder_layers:
+            if self.config.encoder_layers == self.config.decoder_layers:
                 warnings.warn(__HEAD_MASK_WARNING_MSG, FutureWarning)
                 decoder_head_mask = head_mask
 
@@ -1470,7 +1470,7 @@ class T5ForConditionalGeneration(T5PreTrainedModel):
         decoder_config = copy.deepcopy(config)
         decoder_config.is_decoder = True
         decoder_config.is_encoder_decoder = False
-        decoder_config.num_layers = config.num_decoder_layers
+        decoder_config.encoder_layers = config.decoder_layers
         self.decoder = T5Stack(decoder_config, self.shared)
 
         self.lm_head = nn.Linear(config.d_model, config.vocab_size, bias=False)
@@ -1578,13 +1578,13 @@ class T5ForConditionalGeneration(T5PreTrainedModel):
         __HEAD_MASK_WARNING_MSG = """
         The input argument `head_mask` was split into two arguments `head_mask` and `decoder_head_mask`. Currently,
         `decoder_head_mask` is set to copy `head_mask`, but this feature is deprecated and will be removed in future versions.
-        If you do not want to use any `decoder_head_mask` now, please set `decoder_head_mask = torch.ones(num_layers,
+        If you do not want to use any `decoder_head_mask` now, please set `decoder_head_mask = torch.ones(encoder_layers,
         num_heads)`.
         """
 
         # FutureWarning: head_mask was separated into two input args - head_mask, decoder_head_mask
         if head_mask is not None and decoder_head_mask is None:
-            if self.config.num_layers == self.config.num_decoder_layers:
+            if self.config.encoder_layers == self.config.decoder_layers:
                 warnings.warn(__HEAD_MASK_WARNING_MSG, FutureWarning)
                 decoder_head_mask = head_mask
 
