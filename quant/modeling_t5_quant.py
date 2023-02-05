@@ -45,7 +45,7 @@ from transformers.utils import logging
 from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
 from .configuration_t5_quant import T5Config
 
-from .utils_quant import QuantizeLinear, SymQuantizer
+from .utils_quant import QuantizeLinear, QuantizeEmbedding, SymQuantizer
 
 
 logger = logging.get_logger(__name__)
@@ -1264,7 +1264,7 @@ class T5Model(T5PreTrainedModel):
     def __init__(self, config: T5Config):
         super().__init__(config)
         # self.shared = nn.Embedding(config.vocab_size, config.d_model)
-        self.shared = nn.QuantizeEmbedding(config.vocab_size, config.d_model, config=config)
+        self.shared = QuantizeEmbedding(config.vocab_size, config.d_model, config=config)
 
         encoder_config = copy.deepcopy(config)
         encoder_config.is_decoder = False
@@ -1459,7 +1459,7 @@ class T5ForConditionalGeneration(T5PreTrainedModel):
         self.model_dim = config.d_model
 
         # self.shared = nn.Embedding(config.vocab_size, config.d_model)
-        self.shared = nn.QuantizeEmbedding(config.vocab_size, config.d_model, config=config)
+        self.shared = QuantizeEmbedding(config.vocab_size, config.d_model, config=config)
 
         encoder_config = copy.deepcopy(config)
         encoder_config.is_decoder = False
@@ -1748,7 +1748,7 @@ class T5EncoderModel(T5PreTrainedModel):
     def __init__(self, config: T5Config):
         super().__init__(config)
         # self.shared = nn.Embedding(config.vocab_size, config.d_model)
-        self.shared = nn.QuantizeEmbedding(config.vocab_size, config.d_model, config=config)
+        self.shared = QuantizeEmbedding(config.vocab_size, config.d_model, config=config)
 
         encoder_config = copy.deepcopy(config)
         encoder_config.use_cache = False
