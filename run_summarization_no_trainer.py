@@ -517,12 +517,12 @@ def main():
         src_dict = teacher_model.state_dict()  # Pretrained teacher model state dict, whose weights will be loaded
 
         print('Teacher model state dict items:')
-        for key, value in src_dict.items():
-            print(key, value)
+        for key in src_dict.keys():
+            print(key)
 
         print('Student model state dict items:')
-        for key, value in dst_dict.items():
-            print(key, value)
+        for key in dst_dict.keys():
+            print(key)
 
         for key in dst_dict.keys():
             if ("encoder" in key or "decoder" in key) and key[
