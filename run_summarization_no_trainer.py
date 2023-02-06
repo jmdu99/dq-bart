@@ -896,7 +896,7 @@ def main():
             logger.warning(f'Error in deletion: {e}')
         if not args.test_teacher:
             prefix = 'student model'
-            best_model = QBart(student_config)
+            best_model = student_model_class(student_config)
             best_model.load_state_dict(
                 torch.load(os.path.join(args.output_dir + "/", "pytorch_model.bin"), map_location='cpu'), strict=False)
 
