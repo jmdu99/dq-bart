@@ -25,6 +25,7 @@ import math
 import os
 import random
 import sys
+import re
 
 import datasets
 import nltk
@@ -141,8 +142,6 @@ teacher_with_24_layers_distill_mappings = {
                 23: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 18, 18: 19, 19: 20, 20: 21, 21: 22, 22: 23},
                 24: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 23}
 }
-
-NUMS = [str(i) for i in range(10)]
 
 
 def parse_args():
@@ -510,33 +509,44 @@ def main():
 
         student_config_path = os.path.join(args.output_dir, "config.json")
         student_config.to_json_file(student_config_path)
+        tokenizer.save_pretrained(args.output_dir)
 
         student_model = student_model_class(student_config)
 
         dst_dict = student_model.state_dict()  # Initilized student model state dict, needs loading weights
         src_dict = teacher_model.state_dict()  # Pretrained teacher model state dict, whose weights will be loaded
 
-        print('Student model state dict items:')
         for key in dst_dict.keys():
-            print(key)
-
-        for key in dst_dict.keys():
-            if ("encoder" in key or "decoder" in key) and key[
-                21] in NUMS:  # Determine if the key belongs to a encoder/decoder layer,
-                # which starts with sth like model.decoder.layers.1
-
-                m = maps[key[6:9]]  # Determin if it is an encoder or decoder, and get the layer mapping
-                old_idx = int(key[21])  # The layer index of the student model that needs loading
-                new_idx = str(m[old_idx])  # The layer index of the teacher model that should be loaded
-                mapped_key = key[:21] + new_idx + key[22:]  # Get the full teacher layer key
-                if mapped_key in src_dict.keys():  # Exclude the cases
-                    # which does not exist in the teacher model
-                    dst_dict[key] = src_dict[mapped_key]  # Load the weights of the layer
+            # Determine if the key belongs to a encoder/decoder layer like
+            # encoder.block.0.layer.0.SelfAttention.clip_query (T5) or
+            # model.encoder.layers.0.self_attn.clip_query (BART)
+            match = re.search(r'\d+', key)
+            if ("encoder" in key or "decoder" in key) and match:
+                if "encoder" in key:
+                    distill_map = 'enc'
+                if "decoder" in key:
+                    distill_map = 'dec'
+                # Determine if it is an encoder or decoder, and get the layer mapping
+                m = maps[distill_map]
+                # The layer index of the student model that needs loading
+                old_idx = int(match.group())
+                # The layer index of the teacher model that should be loaded
+                new_idx = str(m[old_idx])
+                # Get the full teacher layer key
+                mapped_key = re.sub(r"\b{}\b".format(old_idx), new_idx, key, count=1)
+                print(key)
+                print(mapped_key)
+                # Exclude the cases which does not exist in the teacher model
+                if mapped_key in src_dict.keys():
+                    # Load the weights of the layer
+                    dst_dict[key] = src_dict[mapped_key]
             else:
-                if key in src_dict.keys():  # Load the weights of non-encoder/decoder layers
+                # Load the weights of non-encoder/decoder layers
+                if key in src_dict.keys():
                     dst_dict[key] = src_dict[key]
 
-        student_model.load_state_dict(dst_dict, strict=False)  # Pass the dict to the student model
+        # Pass the dict to the student model
+        student_model.load_state_dict(dst_dict, strict=False)
 
     else:
         raise ValueError(
