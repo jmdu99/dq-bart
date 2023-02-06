@@ -534,8 +534,6 @@ def main():
                 new_idx = str(m[old_idx])
                 # Get the full teacher layer key
                 mapped_key = re.sub(r"\b{}\b".format(old_idx), new_idx, key, count=1)
-                print(key)
-                print(mapped_key)
                 # Exclude the cases which does not exist in the teacher model
                 if mapped_key in src_dict.keys():
                     # Load the weights of the layer
