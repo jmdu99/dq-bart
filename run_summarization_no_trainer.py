@@ -929,9 +929,7 @@ def main():
         logger.info(f"{prefix} test result: {result}")
 
         param_size = sum(p.numel() for p in best_model.parameters())
-        param_size_mb = param_size * 4 / (1024 * 1024)
         logger.info(f"Num. model parameters: {param_size}")
-        logger.info(f"Model size: {param_size_mb} MB")
 
 
 if __name__ == "__main__":
