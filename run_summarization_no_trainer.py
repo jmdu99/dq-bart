@@ -883,9 +883,7 @@ def main():
     if args.do_test:
         if not args.test_teacher:
             prefix = 'student model'
-            best_model = student_model_class(student_config)
-            best_model.load_state_dict(
-                torch.load(os.path.join(args.output_dir + "/", "pytorch_model.bin"), map_location='cpu'))
+            best_model = student_model
 
         if args.test_teacher:
             prefix = 'teacher model'
