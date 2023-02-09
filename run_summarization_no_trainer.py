@@ -26,6 +26,7 @@ import os
 import random
 import sys
 import re
+import time
 
 import datasets
 import nltk
@@ -893,7 +894,11 @@ def main():
         best_model = accelerator.prepare(best_model)
         best_model.eval()
 
+        latencies = []
+        throughputs = []
+
         for step, batch in enumerate(tqdm(test_dataloader)):
+            t1 = time.time()
             with torch.no_grad():
                 generated_tokens = accelerator.unwrap_model(best_model).generate(
                     batch["input_ids"],
@@ -922,6 +927,20 @@ def main():
                 decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
 
                 metric.add_batch(predictions=decoded_preds, references=decoded_labels)
+
+            t2 = time.time()
+            latency = (t2 - t1) / len(batch["input_ids"])
+            throughput = len(batch["input_ids"]) / (t2 - t1)
+            latencies.append(latency)
+            throughputs.append(throughput)
+
+        # Average the results
+        latency = sum(latencies) / len(latencies)
+        throughput = sum(throughputs) / len(throughputs)
+
+        logger.info(f"Inference Latency: {latency} sec")
+        logger.info(f"Throughput: {throughput} samples/sec")
+
         result = metric.compute(use_stemmer=True)
         # Extract a few results from ROUGE
         result = {key: value.mid.fmeasure * 100 for key, value in result.items()}
