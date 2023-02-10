@@ -8,3 +8,4 @@ tensorboard
 setuptools<50
 rouge_score
 py7zr
+protoc >= 3.19.0
